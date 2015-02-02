@@ -22,10 +22,10 @@ echo "读出所有的java里面的layout"
 TEMPLAYOUT=${TEMPDIR}/UseLayout_temp.txt
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
 
-    content=`echo  \`cat ${line} | awk -F R.layout.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
+    content=`echo  \`cat ${line} | awk -F R.layout.  '{for(i=2;i<=NF;i++)print "###"$i}'\`|tr "\n" " "|tr "\r" " " `;
 #    echo ${content}
     for line in ${content} ;do
-        echo ${line}|awk -F "###" '{print $2}'| awk -F "[;),]" '{print $1}' >> ${TEMPLAYOUT}
+        echo ${line}|awk -F "###" '{print $2}'| awk -F "[;), :]" '{print $1}' >> ${TEMPLAYOUT}
     done;
 
 #    echo `echo  \`cat  ${line}\`  | awk -F R.layout.  'NR>2{print $2}' | awk -F "[;),]" '{print $1}'` >> ${TEMPLAYOUT}
@@ -100,7 +100,7 @@ touch ${TEMPLAYOUT}
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
     content=`echo  \`cat ${line} | awk -F R.drawable.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
     for line in ${content} ;do
-        echo ${line}|awk -F "###" '{print $2}'| awk -F "[\";),:]" '{print $1}' >> ${TEMPLAYOUT}
+        echo ${line}|awk -F "###" '{print $2}'| awk -F "[\":;),]" '{print $1}' >> ${TEMPLAYOUT}
     done;
 done
 
@@ -125,8 +125,8 @@ for drawable in `cat ${TEMPLAYOUT}` ;do
 done;
 
 
-echo "scan sytle drawable"
-for drawableItem in `find  ${basepic}   -type f  -name "*style*.xml" ` ;do
+echo "scan res/values里面引用到的 drawable"
+for drawableItem in `find  ${basevalue}   -type f  -name "*.xml" ` ;do
             content=`echo  \`cat "${drawableItem}" | awk -F @drawable/  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
             for line in ${content} ;do
                 echo ${line}|awk -F "###" '{print $2}'| awk -F "[\"<]" '{print $1}' >> ${DRAWBALE_TEXT}
@@ -208,7 +208,7 @@ for line in `find  ${basesrc}   -type f  -name "*.java" `;do
     content=`echo  \`cat ${line} | awk -F R.string.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
 #    echo ${content}
     for line in ${content} ;do
-            str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");,]" '{print $1".string"}'`
+            str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");:,]" '{print $1".string"}'`
 
                 if grep -q ${str} ${TEMPSTRING}
                 then
@@ -259,18 +259,18 @@ do
    echo ${str}
     if grep -q ${str} ${TEMPSTRING}
                 then
-
+                    
                     echo "${line}">>${newString}
                 else
                     holde=""
 #                    echo "${line}">>${newString}
                 fi
  done
-
+ 
  echo "</resources>" >>${newString}
-
+ 
  mv ${basevalue}/strings.xml  ${TEMPDIR}/stringsOld.xml
-
+ 
  cp ${newString} ${basevalue}/strings.xml
 
 
@@ -287,10 +287,10 @@ TEMPSTRING=${TEMPDIR}/UseIds.txt
 touch ${TEMPSTRING}
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
 
-    content=`echo  \`cat ${line} | awk -F R.id.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
+    content=`echo  \`cat ${line} | awk -F R.id.  '{for(i=2;i<=NF;i++)print "###"$i}'\``|tr "\n" "";
 #    echo ${content}
     for line in ${content} ;do
-            str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");,]" '{print $1".id"}'`
+            str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");,:]" '{print $1".id"}'`
 
                 if grep -q ${str} ${TEMPSTRING}
                 then
@@ -329,7 +329,7 @@ echo  "找出所有layout 里面include 布局"
 
 newIDs=${TEMPDIR}/ids.xml
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >>${newIDs}
-
+echo "<resources>" >>${newIDs}
 cat "${basevalue}/ids.xml"|while read line;
 do
    str=`echo \`echo ${line}|awk -F \" '{print $2".id"}'\` `;
