@@ -98,7 +98,7 @@ DRAWBALE_TEXT=${TEMPDIR}/UseDrawable.txt
 rm -rf ${TEMPLAYOUT}
 touch ${TEMPLAYOUT}
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
-    content=`echo  \`cat ${line} | awk -F R.drawable.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
+    content=`echo  \`cat ${line} | awk -F R.drawable.  '{for(i=2;i<=NF;i++)print "###"$i}'\`|tr "\n" " "|tr "\r" " " `;
     for line in ${content} ;do
         echo ${line}|awk -F "###" '{print $2}'| awk -F "[\":;),]" '{print $1}' >> ${TEMPLAYOUT}
     done;
@@ -205,7 +205,7 @@ TEMPSTRING=${TEMPDIR}/UseStringId.txt
 touch ${TEMPSTRING}
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
 
-    content=`echo  \`cat ${line} | awk -F R.string.  '{for(i=2;i<=NF;i++)print "###"$i}'\``;
+    content=`echo  \`cat ${line} | awk -F R.string.  '{for(i=2;i<=NF;i++)print "###"$i}'\` |tr "\n" " "|tr "\r" " " `;
 #    echo ${content}
     for line in ${content} ;do
             str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");:,]" '{print $1".string"}'`
@@ -287,7 +287,7 @@ TEMPSTRING=${TEMPDIR}/UseIds.txt
 touch ${TEMPSTRING}
 for line in `find  ${basesrc}   -type f  -name "*.java" `;do
 
-    content=`echo  \`cat ${line} | awk -F R.id.  '{for(i=2;i<=NF;i++)print "###"$i}'\``|tr "\n" "";
+    content=`echo  \`cat ${line} | awk -F R.id.  '{for(i=2;i<=NF;i++)print "###"$i}'\`|tr "\n" " "|tr "\r" " " `;
 #    echo ${content}
     for line in ${content} ;do
             str=`echo ${line}|awk -F "###" '{print $2}'| awk -F "[\");,:]" '{print $1".id"}'`
@@ -333,7 +333,7 @@ echo "<resources>" >>${newIDs}
 cat "${basevalue}/ids.xml"|while read line;
 do
    str=`echo \`echo ${line}|awk -F \" '{print $2".id"}'\` `;
-   echo ${str}
+#   echo ${str}
     if grep -q ${str} ${TEMPSTRING}
                 then
 
